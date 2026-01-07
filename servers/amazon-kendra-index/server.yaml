@@ -11,7 +11,7 @@ about:
   icon: https://avatars.githubusercontent.com/u/3299148?v=4
 source:
   project: https://github.com/awslabs/mcp
-  commit: 7bace1f81455088b6690a44e99cabb602259ddf7
+  commit: 7b3caf6c29f9a0c501e63f253fdf5e6c787ae7b4
   directory: src/amazon-kendra-index-mcp-server
 config:
   description: Configure AWS credentials and Kendra Index settings
