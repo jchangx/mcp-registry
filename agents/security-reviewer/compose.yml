@@ -52,10 +52,13 @@ services:
       # NOTE: Anthropic clients such as Claude Code will implicitly include a
       # /v1 component in their request URLs, so if you override this environment
       # variable, be sure not to include a /v1 path component.
-      PROXY_ANTHROPIC_BASE_URL: ${PROXY_ANTHROPIC_BASE_URL:-https://api.anthropic.com}
+      # Default uses Docker AI Gateway. For direct Anthropic API, set to https://api.anthropic.com
+      PROXY_ANTHROPIC_BASE_URL: ${PROXY_ANTHROPIC_BASE_URL:-https://gw.docker.com/v1/docker/gateways/default/models}
       PROXY_API_KEY: "sk-compose-clients"
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # Use Docker AI Gateway: set ANTHROPIC_AUTH_TOKEN=$(curl -s --unix-socket ~/Library/Containers/com.docker.docker/Data/backend.sock http://_/registry/token | tr -d '"')
+      ANTHROPIC_AUTH_TOKEN: ${ANTHROPIC_AUTH_TOKEN:-}
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 http://localhost:4000/health/liveness || exit 1"]
       interval: 5s

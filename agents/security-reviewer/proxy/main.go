@@ -126,6 +126,7 @@ func loadConfig() (proxyConfig, error) {
 
 	openAIKey := strings.TrimSpace(os.Getenv("OPENAI_API_KEY"))
 	anthropicKey := strings.TrimSpace(os.Getenv("ANTHROPIC_API_KEY"))
+	anthropicToken := strings.TrimSpace(os.Getenv("ANTHROPIC_AUTH_TOKEN"))
 
 	openAIProxy := providerProxy{
 		Prefix:      openAIInboundPrefix,
@@ -134,11 +135,23 @@ func loadConfig() (proxyConfig, error) {
 		HeaderValue: bearerValue(openAIKey),
 		DisplayName: "OpenAI",
 	}
+
+	// Support both ANTHROPIC_API_KEY (X-Api-Key header) and ANTHROPIC_AUTH_TOKEN (Bearer token).
+	// ANTHROPIC_API_KEY takes precedence. ANTHROPIC_AUTH_TOKEN is used for Docker AI Gateway.
+	var anthropicHeaderName, anthropicHeaderValue string
+	if anthropicKey != "" {
+		anthropicHeaderName = headerAnthropicAPIKey
+		anthropicHeaderValue = anthropicKey
+	} else {
+		anthropicHeaderName = headerAuthorization
+		anthropicHeaderValue = bearerValue(anthropicToken)
+	}
+
 	anthropicProxy := providerProxy{
 		Prefix:      anthropicInboundPrefix,
 		Target:      anthropicBase,
-		HeaderName:  headerAnthropicAPIKey,
-		HeaderValue: anthropicKey,
+		HeaderName:  anthropicHeaderName,
+		HeaderValue: anthropicHeaderValue,
 		DisplayName: "Anthropic",
 	}
 
