@@ -150,13 +150,15 @@ After creating your server file with `task create`, you will be given instructio
 ```
 task build -- --tools my-orgdb-mcp # Not needed if providing your own image
 task catalog -- my-orgdb-mcp
-docker mcp catalog import $PWD/catalogs/my-orgdb-mcp/catalog.yaml
+docker mcp catalog create my-orgdb-test --server "file://$PWD/catalogs/my-orgdb-mcp/catalog.yaml" --title "My OrgDB Test"
+docker mcp profile server add default --server "catalog://my-orgdb-test/my-orgdb-mcp"
 ```
 
-Now, if we go into the MCP Toolkit on Docker Desktop, we'll see our new MCP server there! We can configure and enable it there, and test it against configured clients. Once we're done testing, we can restore it back to the original Docker catalog.
+Now, if we go into the MCP Toolkit on Docker Desktop, we'll see our new MCP server there! We can configure and enable it there, and test it against configured clients. Once we're done testing, clean up:
 
 ```
-docker mcp catalog reset
+docker mcp profile server remove default my-orgdb-mcp
+docker mcp catalog remove my-orgdb-test
 ```
 
 ### Avoiding `build --tools` failures
@@ -314,8 +316,8 @@ You can test your remote server configuration by importing it into Docker Deskto
 
 ```bash
 task catalog -- my-remote-server
-docker mcp catalog import $PWD/catalogs/my-remote-server/catalog.yaml
-docker mcp server enable my-remote-server
+docker mcp catalog create my-remote-test --server "file://$PWD/catalogs/my-remote-server/catalog.yaml" --title "My Remote Test"
+docker mcp profile server add default --server "catalog://my-remote-test/my-remote-server"
 ```
 
 For OAuth-enabled servers, authorize the server:
@@ -324,12 +326,13 @@ For OAuth-enabled servers, authorize the server:
 docker mcp oauth authorize my-remote-server
 ```
 
-Now you can start the gateway with `docker mcp gateway run` and test tool calls to the remote server.
+Now you can verify tools are available with `docker mcp tools ls --verbose` and test tool calls to the remote server.
 
-When done testing, reset the catalog:
+When done testing, clean up:
 
 ```bash
-docker mcp catalog reset
+docker mcp profile server remove default my-remote-server
+docker mcp catalog remove my-remote-test
 ```
 
 #### 6️⃣ Open a pull request
